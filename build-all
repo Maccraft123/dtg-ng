@@ -28,7 +28,7 @@ mount ${SD}1 $DTGROOT/tmp/root
 
 ./kernel/build $DTGROOT $DEVICE $SD
 ./uboot/build $DTGROOT $DEVICE $SD
-#./fs/build $DTGROOT $DEVICE $SD
+./fs/build $DTGROOT $DEVICE $SD
 
 ./kernel/install $DTGROOT $DEVICE $SD
 ./uboot/install $DTGROOT $DEVICE $SD
