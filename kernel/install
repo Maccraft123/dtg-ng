@@ -1,0 +1,15 @@
+#!/bin/bash
+set -e
+
+export DTGROOT=$1
+export DEVICE=$2
+export SD=$3
+
+cd $DTGROOT/tmp/linux
+
+mkdir -p $DTGROOT/tmp/root/boot/
+
+cp arch/arm64/boot/dts/rockchip/rk3326-*.dtb $DTGROOT/tmp/root/boot/
+cp arch/arm64/boot/Image $DTGROOT/tmp/root/boot/
+
+make INSTALL_MOD_PATH=$DTGROOT/tmp/root/ ARCH=arm64 modules_install

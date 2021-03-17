@@ -1,0 +1,38 @@
+#!/bin/bash
+set -e
+set -v
+
+DTGROOT=$(pwd)
+SD=$1
+
+export DEVICE=oga
+
+export ARCH=arm64
+export CROSS_COMPILE=aarch64-linux-gnu-
+
+mkdir -p tmp
+
+printf 'o
+n
+p
+1
+
+
+w
+' | fdisk $SD
+partx $SD
+mkfs.ext4 ${SD}1
+
+mkdir -p $DTGROOT/tmp/root
+mount ${SD}1 $DTGROOT/tmp/root
+
+./kernel/build $DTGROOT $DEVICE $SD
+./uboot/build $DTGROOT $DEVICE $SD
+#./fs/build $DTGROOT $DEVICE $SD
+
+./kernel/install $DTGROOT $DEVICE $SD
+./uboot/install $DTGROOT $DEVICE $SD
+
+umount $DTGROOT/tmp/root
+
+echo 'Done!'

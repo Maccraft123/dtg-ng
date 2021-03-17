@@ -1,0 +1,23 @@
+#!/bin/bash
+set -e
+
+export DTGROOT=$1
+export DEVICE=$2
+export SD=$3
+
+mkdir -p $DTGROOT/tmp
+cd $DTGROOT/tmp
+
+if [ -d 'linux' ]; then
+	cd linux
+	git pull
+else
+	git clone https://github.com/Maccraft123/linux --single-branch -b odroidgo
+fi
+
+cd $DTGROOT/tmp/linux
+
+cp $DTGROOT/device/$DEVICE/linux-config ./.config
+
+make oldconfig
+make -j$(nproc)

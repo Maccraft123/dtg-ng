@@ -1,0 +1,13 @@
+#!/bin/bash
+set -e
+
+export DTGROOT=$1
+export DEVICE=$2
+export SD=$3
+
+mkdir -p $DTGROOT/tmp
+cd $DTGROOT/tmp/u-boot
+
+dd if=idbloader.img of=$SD bs=512 seek=64 status=none
+dd if=u-boot.itb of=$SD bs=512 seek=512 status=none
+

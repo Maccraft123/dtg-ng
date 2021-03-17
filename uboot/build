@@ -1,0 +1,35 @@
+#!/bin/bash
+set -e
+
+export DTGROOT=$1
+export DEVICE=$2
+export SD=$3
+
+mkdir -p $DTGROOT/tmp
+cd $DTGROOT/tmp
+
+if [ -d 'atf' ]; then
+	cd atf
+	git pull
+else
+	git clone https://github.com/ARM-software/arm-trusted-firmware.git atf
+	cd atf
+fi
+
+make PLAT=px30 DEBUG=0 bl31 -j$(nproc)
+
+cd $DTGROOT/tmp/
+
+if [ -d 'u-boot' ]; then
+	cd u-boot
+	git pull
+else
+	git clone https://github.com/Maccraft123/u-boot --single-branch -b master
+	cd u-boot
+fi
+
+
+cp $DTGROOT/device/$DEVICE/u-boot-config ./.config
+
+make oldconfig
+env BL31=$DTGROOT/tmp/atf/build/px30/release/bl31/bl31.elf ARCH=arm make -j$(nproc)
