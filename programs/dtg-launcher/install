@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# this runs on device or in chroot
+
+mkdir -p /tmp/dtg-ng
+cd /tmp/dtg-ng
+
+if [ -d dtg-launcher ]; then
+	cd dtg-launcher
+	git pull
+else
+	git clone https://github.com/Maccraft123/dtg-launcher.git
+	cd dtg-launcher
+fi
+
+make
+make install
