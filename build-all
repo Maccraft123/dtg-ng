@@ -21,7 +21,7 @@ p
 w
 ' | fdisk $SD
 partx $SD
-mkfs.f2fs ${SD}1
+mkfs.ext4 ${SD}1
 
 mkdir -p $DTGROOT/tmp/root
 mount ${SD}1 $DTGROOT/tmp/root
