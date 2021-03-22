@@ -13,3 +13,5 @@ cp arch/arm64/boot/dts/rockchip/rk3326-*.dtb $DTGROOT/tmp/root/boot/
 cp arch/arm64/boot/Image $DTGROOT/tmp/root/boot/
 
 make INSTALL_MOD_PATH=$DTGROOT/tmp/root/ ARCH=arm64 modules_install
+
+cp dwc2-gadget.ko $DTGROOT/tmp/root/dtg-ng/

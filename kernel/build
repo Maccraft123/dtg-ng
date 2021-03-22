@@ -17,6 +17,11 @@ fi
 
 cd $DTGROOT/tmp/linux
 
+cp $DTGROOT/device/$DEVICE/linux-config.gadget ./.config
+make oldconfig
+make -j$(nproc)
+cp drivers/usb/dwc2/dwc2.ko ./dwc2-gadget.ko
+
 cp $DTGROOT/device/$DEVICE/linux-config ./.config
 
 make oldconfig
