@@ -17,16 +17,16 @@ fi
 
 cd $DTGROOT/tmp/linux
 
-cp $DTGROOT/device/$DEVICE/linux-config
+cp $DTGROOT/device/$DEVICE/linux-config ./.config
 
-patch -p1 $DTGROOT/device/$DEVICE/gadget.patch
+patch -p1 < $DTGROOT/device/$DEVICE/gadget.patch
 
 make oldconfig
 make -j$(nproc)
 
 cp drivers/usb/dwc2/dwc2.ko ./dwc2-gadget.ko
 
-patch -p1 -R $DTGROOT/device/$DEVICE/gadget.patch
+patch -p1 -R < $DTGROOT/device/$DEVICE/gadget.patch
 
 make oldconfig
 make -j$(nproc)
