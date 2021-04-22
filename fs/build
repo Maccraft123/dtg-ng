@@ -23,7 +23,6 @@ ExecStart=-/usr/sbin/agetty --autologin user --noclear %%I $TERM
 ' > $DTGROOT/tmp/root/etc/systemd/system/getty@tty1.service.d/override.conf
 
 echo 'export WLR_LIBINPUT_NO_DEVICES=1' >> $DTGROOT/tmp/root/home/user/.bashrc
-echo 'export PAN_MESA_DEBUG=afbc' >> $DTGROOT/tmp/root/home/user/.bashrc
 echo 'tty | grep tty1 && exec sway' >> $DTGROOT/tmp/root/home/user/.bashrc
 echo '[ -n "$DISPLAY" ] && dtg-launcher' >> $DTGROOT/tmp/root/home/user/.bashrc
 
