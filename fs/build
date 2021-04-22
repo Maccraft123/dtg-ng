@@ -24,7 +24,7 @@ ExecStart=-/usr/sbin/agetty --autologin user --noclear %%I $TERM
 
 echo 'export WLR_LIBINPUT_NO_DEVICES=1' >> $DTGROOT/tmp/root/home/user/.bashrc
 echo 'tty | grep tty1 && exec sway' >> $DTGROOT/tmp/root/home/user/.bashrc
-echo '[ -n "$DISPLAY" ] && dtg-launcher' >> $DTGROOT/tmp/root/home/user/.bashrc
+echo '[ -n "$DISPLAY" ] && ( while true; do dtg-launcher; done )' >> $DTGROOT/tmp/root/home/user/.bashrc
 
 cp $DTGROOT/device/$DEVICE/sway-config $DTGROOT/tmp/root/etc/sway/config
 cp $DTGROOT/device/$DEVICE/i3status.conf $DTGROOT/tmp/root/etc/i3status.conf
