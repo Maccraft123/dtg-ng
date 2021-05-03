@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # this runs on device or in chroot
+# updates too
 
 mkdir -p /tmp/dtg-ng
 cd /tmp/dtg-ng

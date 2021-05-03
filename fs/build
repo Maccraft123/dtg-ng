@@ -29,6 +29,9 @@ echo '[ -n "$DISPLAY" ] && ( while true; do dtg-launcher; done )' >> $DTGROOT/tm
 cp $DTGROOT/device/$DEVICE/sway-config $DTGROOT/tmp/root/etc/sway/config
 cp $DTGROOT/device/$DEVICE/i3status.conf $DTGROOT/tmp/root/etc/i3status.conf
 
+# todo: odroid go advance
+cp $DTGROOT/device/$DEVICE/retroarch.cfg $DTGROOT/tmp/root/etc/retroarch.cfg
+
 mkdir -p $DTGROOT/tmp/root/dtg-ng/programs
 cp -r $DTGROOT/programs/* $DTGROOT/tmp/root/dtg-ng/programs/
 

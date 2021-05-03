@@ -16,12 +16,20 @@ printf 'o
 n
 p
 1
+2048
++4G
+n
+p
+2
 
 
 w
 ' | fdisk $SD
 partx $SD
+# system partition
 mkfs.ext4 ${SD}1
+# data partition
+mkfs.fat -F32 ${SD}2
 
 mkdir -p $DTGROOT/tmp/root
 mount ${SD}1 $DTGROOT/tmp/root
