@@ -8,7 +8,7 @@ export SD=$3
 mkdir -p $DTGROOT/tmp
 cd $DTGROOT/tmp
 
-qemu-debootstrap --arch=arm64 sid $DTGROOT/tmp/root https://deb.debian.org/debian || true
+debootstrap --arch=arm64 sid $DTGROOT/tmp/root https://deb.debian.org/debian || true
 
 
 chroot $DTGROOT/tmp/root /bin/passwd -d root
