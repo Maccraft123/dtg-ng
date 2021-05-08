@@ -15,7 +15,7 @@ if [ -d 'linux' ]; then
 	cd linux
 	git pull
 else
-	git clone https://github.com/Maccraft123/linux --single-branch -b odroidgo
+	git clone https://github.com/Maccraft123/linux --single-branch -b mac/go-next
 fi
 
 cd $DTGROOT/tmp/linux
