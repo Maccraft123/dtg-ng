@@ -5,6 +5,9 @@ export DTGROOT=$1
 export DEVICE=$2
 export SD=$3
 
+export ARCH=arm64
+export CROSS_COMPILE=aarch64-linux-gnu-
+
 mkdir -p $DTGROOT/tmp
 cd $DTGROOT/tmp
 
