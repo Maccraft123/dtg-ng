@@ -3,8 +3,8 @@
 # this runs on device or in chroot
 # updates too
 
-mkdir -p /tmp/dtg-ng
-cd /tmp/dtg-ng
+mkdir -p /dtg-ng/src
+cd /dtg-ng/src
 
 if [ -d dtg-launcher ]; then
 	cd dtg-launcher
