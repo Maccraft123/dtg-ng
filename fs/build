@@ -8,13 +8,29 @@ export SD=$3
 mkdir -p $DTGROOT/tmp
 cd $DTGROOT/tmp
 
-debootstrap --arch=arm64 sid $DTGROOT/tmp/root https://deb.debian.org/debian || true
 
+#chroot $DTGROOT/tmp/root /bin/passwd -d root
+#chroot $DTGROOT/tmp/root /bin/apt install -y sway xfce4-terminal xwayland i3status build-essential git libncurses-dev supertuxkart retroarch kodi kodi-peripheral-joystick brightnessctl sudo alsa-utils
+#chroot $DTGROOT/tmp/root /bin/apt install -y libretro-nestopia libretro-mupen64plus libretro-mgba libretro-gambatte libretro-desmume libretro-beetle-psx libretro-bsnes-mercury-performance 
 
-chroot $DTGROOT/tmp/root /bin/passwd -d root
-chroot $DTGROOT/tmp/root /bin/apt update
-chroot $DTGROOT/tmp/root /bin/apt install -y sway xfce4-terminal xwayland i3status build-essential git libncurses-dev supertuxkart retroarch kodi kodi-peripheral-joystick brightnessctl sudo alsa-utils
-chroot $DTGROOT/tmp/root /bin/apt install -y libretro-nestopia libretro-mupen64plus libretro-mgba libretro-gambatte libretro-desmume libretro-beetle-psx libretro-bsnes-mercury-performance 
+#[ -f ArchLinuxARM-aarch64-latest.tar.gz ] && rm -f ArchLinuxARM-aarch64-latest.tar.gz
+#wget http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz
+#bsdtar -xpf ArchLinuxARM-aarch64-latest.tar.gz -C $DTGROOT/tmp/root
+
+rm -f $DTGROOT/tmp/root/etc/resolv.conf
+cat /etc/resolv.conf > $DTGROOT/tmp/root/etc/resolv.conf
+
+#rm -rf $DTGROOT/tmp/root/etc/pacman.d/gnupg
+
+#arch-chroot $DTGROOT/tmp/root /bin/pacman-key --init
+#arch-chroot $DTGROOT/tmp/root /bin/pacman-key --populate archlinuxarm
+
+sed -i'' 's/CheckSpace/#CheckSpace/' $DTGROOT/tmp/root/etc/pacman.conf
+sed -i'' 's/SigLevel    = Required DatabaseOptional/SigLevel = Never/' $DTGROOT/tmp/root/etc/pacman.conf # who needs security anyways
+
+arch-chroot $DTGROOT/tmp/root /bin/pacman -Syu mesa sway xfce4-terminal xorg-xwayland i3status gcc git ncurses retroarch brightnessctl sudo alsa-utils make 
+arch-chroot $DTGROOT/tmp/root /bin/pacman -Rsc linux-aarch64
+
 chroot $DTGROOT/tmp/root /usr/sbin/useradd -c "DTG User" -m user -G video,audio,render,input -s /bin/bash
 
 mkdir -p $DTGROOT/tmp/root/etc/systemd/system/getty@tty1.service.d/
