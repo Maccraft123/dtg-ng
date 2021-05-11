@@ -37,3 +37,7 @@ cp -r $DTGROOT/programs/* $DTGROOT/tmp/root/dtg-ng/programs/
 
 chmod a+x $DTGROOT/tmp/root/dtg-ng/programs/dtg-launcher/install
 chroot $DTGROOT/tmp/root/ /dtg-ng/programs/dtg-launcher/install
+
+chmod a+w $DTGROOT/tmp/root/etc/sudoers
+echo 'user ALL=(ALL:ALL) NOPASSWD: ALL' >> $DTGROOT/tmp/root/etc/sudoers
+chmod a-w $DTGROOT/tmp/root/etc/sudoers
