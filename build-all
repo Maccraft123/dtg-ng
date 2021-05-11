@@ -32,15 +32,19 @@ mkfs.ext4 ${SD}1
 mkfs.fat -F32 ${SD}2
 
 mkdir -p $DTGROOT/tmp/root
+mkdir -p $DTGROOT/tmp/data
 mount ${SD}1 $DTGROOT/tmp/root
+mount ${SD}2 $DTGROOT/tmp/data
 
 ./kernel/build $DTGROOT $DEVICE $SD
 ./uboot/build $DTGROOT $DEVICE $SD
 ./fs/build $DTGROOT $DEVICE $SD
+./fs/mk_data $DTGROOT $DEVICE $SD
 
 ./kernel/install $DTGROOT $DEVICE $SD
 ./uboot/install $DTGROOT $DEVICE $SD
 
 umount $DTGROOT/tmp/root
+umount $DTGROOT/tmp/data
 
 echo 'Done!'

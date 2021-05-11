@@ -41,3 +41,7 @@ chroot $DTGROOT/tmp/root/ /dtg-ng/programs/dtg-launcher/install
 chmod a+w $DTGROOT/tmp/root/etc/sudoers
 echo 'user ALL=(ALL:ALL) NOPASSWD: ALL' >> $DTGROOT/tmp/root/etc/sudoers
 chmod a-w $DTGROOT/tmp/root/etc/sudoers
+
+
+mkdir $DTGROOT/tmp/root/data
+echo '/dev/mmcblk0p2 /data vfat rw,umask=0000 0 0' > $DTGROOT/tmp/root/etc/fstab
