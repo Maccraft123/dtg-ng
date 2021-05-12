@@ -11,37 +11,42 @@ cd $DTGROOT/tmp
 
 #chroot $DTGROOT/tmp/root /bin/passwd -d root
 #chroot $DTGROOT/tmp/root /bin/apt install -y sway xfce4-terminal xwayland i3status build-essential git libncurses-dev supertuxkart retroarch kodi kodi-peripheral-joystick brightnessctl sudo alsa-utils
-#chroot $DTGROOT/tmp/root /bin/apt install -y libretro-nestopia libretro-mupen64plus libretro-mgba libretro-gambatte libretro-desmume libretro-beetle-psx libretro-bsnes-mercury-performance 
+#chroot $DTGROOT/tmp/root /bin/apt install -y libretro-nestopia libretro-mupen64plus libretro-mgba libretro-gambatte libretro-desmume libretro-beetle-psx libretro-bsnes-mercury-performance
 
-#[ -f ArchLinuxARM-aarch64-latest.tar.gz ] && rm -f ArchLinuxARM-aarch64-latest.tar.gz
-#wget http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz
-#bsdtar -xpf ArchLinuxARM-aarch64-latest.tar.gz -C $DTGROOT/tmp/root
 
-rm -f $DTGROOT/tmp/root/etc/resolv.conf
-cat /etc/resolv.conf > $DTGROOT/tmp/root/etc/resolv.conf
+ROOTFS_TAR="$(curl -s -L https://voidlinux.org/download/ | grep aarch64 | tr '"' ' ' | awk '{print $3}' | grep musl)"
 
-#rm -rf $DTGROOT/tmp/root/etc/pacman.d/gnupg
+wget $ROOTFS_TAR -O void.tar.xz
+tar xfp void.tar.xz -C $DTGROOT/tmp/root
+cp /etc/resolv.conf $DTGROOT/tmp/root/etc/resolv.conf
 
-#arch-chroot $DTGROOT/tmp/root /bin/pacman-key --init
-#arch-chroot $DTGROOT/tmp/root /bin/pacman-key --populate archlinuxarm
+chroot $DTGROOT/tmp/root/ /bin/xbps-install -Syu xbps
+chroot $DTGROOT/tmp/root/ /bin/xbps-install -yu
+chroot $DTGROOT/tmp/root/ /bin/xbps-install -y base-system
+chroot $DTGROOT/tmp/root/ /bin/xbps-remove -y base-voidstrap
+chroot $DTGROOT/tmp/root/ /bin/xbps-install -y vim NetworkManager mesa mesa-panfrost-dri base-devel sway xfce4-terminal xorg-server-xwayland i3status git ncurses supertuxkart retroarch kodi kodi-addon-peripheral-joystick brightnessctl sudo alsa-utils ppsspp ncurses-devel dejavu-fonts-ttf
 
-sed -i'' 's/CheckSpace/#CheckSpace/' $DTGROOT/tmp/root/etc/pacman.conf
-sed -i'' 's/SigLevel    = Required DatabaseOptional/SigLevel = Never/' $DTGROOT/tmp/root/etc/pacman.conf # who needs security anyways
+chroot $DTGROOT/tmp/root /usr/sbin/useradd -c "DTG User" -m user -G video,audio,input -s /bin/bash
 
-arch-chroot $DTGROOT/tmp/root /bin/pacman -Syu mesa sway xfce4-terminal xorg-xwayland i3status gcc git ncurses retroarch brightnessctl sudo alsa-utils make 
-arch-chroot $DTGROOT/tmp/root /bin/pacman -Rsc linux-aarch64
+cp -R $DTGROOT/tmp/root/etc/sv/agetty-tty1 $DTGROOT/tmp/root/etc/sv/agetty-autologin-tty1
+echo 'GETTY_ARGS="--autologin user --noclear"
+BAUD_RATE=38400
+TERM_NAME=linux' > $DTGROOT/tmp/root/etc/sv/agetty-autologin-tty1/conf
 
-chroot $DTGROOT/tmp/root /usr/sbin/useradd -c "DTG User" -m user -G video,audio,render,input -s /bin/bash
+[ -e $DTGROOT/tmp/root/etc/runit/runsvdir/default/agetty-tty1 ] && rm $DTGROOT/tmp/root/etc/runit/runsvdir/default/agetty-tty1
+[ -e $DTGROOT/tmp/root/etc/runit/runsvdir/default/agetty-autologin-tty1 ] && rm $DTGROOT/tmp/root/etc/runit/runsvdir/default/agetty-autologin-tty1
+# symlinks have to be made inside chrot
+chroot $DTGROOT/tmp/root ln -s /etc/sv/agetty-autologin-tty1 /etc/runit/runsvdir/default/
 
-mkdir -p $DTGROOT/tmp/root/etc/systemd/system/getty@tty1.service.d/
-printf '[Service]
-ExecStart=
-ExecStart=-/usr/sbin/agetty --autologin user --noclear %%I $TERM
-' > $DTGROOT/tmp/root/etc/systemd/system/getty@tty1.service.d/override.conf
+# the uart thing shell
+cp -R $DTGROOT/tmp/root/etc/sv/agetty-ttyS0 $DTGROOT/tmp/root/etc/sv/agetty-ttyS2
+chroot $DTGROOT/tmp/root ln -s /etc/sv/agetty-ttyS2 /etc/runit/runsvdir/default/
+
+chroot $DTGROOT/tmp/root /bin/passwd -d root
 
 echo 'export WLR_LIBINPUT_NO_DEVICES=1' >> $DTGROOT/tmp/root/home/user/.bashrc
 echo 'tty | grep tty1 && exec sway' >> $DTGROOT/tmp/root/home/user/.bashrc
-echo '[ -n "$DISPLAY" ] && ( while true; do dtg-launcher; done )' >> $DTGROOT/tmp/root/home/user/.bashrc
+echo '[ -n "$WAYLAND_DISPLAY" ] && ( while true; do dtg-launcher; done )' >> $DTGROOT/tmp/root/home/user/.bashrc
 
 cp $DTGROOT/device/$DEVICE/sway-config $DTGROOT/tmp/root/etc/sway/config
 cp $DTGROOT/device/$DEVICE/i3status.conf $DTGROOT/tmp/root/etc/i3status.conf
@@ -58,7 +63,6 @@ chroot $DTGROOT/tmp/root/ /dtg-ng/programs/dtg-launcher/install
 chmod a+w $DTGROOT/tmp/root/etc/sudoers
 echo 'user ALL=(ALL:ALL) NOPASSWD: ALL' >> $DTGROOT/tmp/root/etc/sudoers
 chmod a-w $DTGROOT/tmp/root/etc/sudoers
-
 
 mkdir $DTGROOT/tmp/root/data
 echo '/dev/mmcblk0p2 /data vfat rw,umask=0000 0 0' > $DTGROOT/tmp/root/etc/fstab
