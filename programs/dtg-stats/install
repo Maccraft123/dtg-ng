@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# this runs on device or in chroot
+# updates too
+
+mkdir -p /dtg-ng/src
+cd /dtg-ng/src
+
+if [ -d dtg-stats ]; then
+	cd dtg-stats
+	git pull
+else
+	git clone https://github.com/Maccraft123/dtg-stats.git
+	cd dtg-stats
+fi
+
+make
+make install
