@@ -33,7 +33,7 @@ echo 'GETTY_ARGS="--autologin user --noclear"
 BAUD_RATE=38400
 TERM_NAME=linux' > $DTGROOT/tmp/root/etc/sv/agetty-autologin-tty1/conf
 
-[ -e $DTGROOT/tmp/root/etc/runit/runsvdir/default/agetty-tty1 ] && rm -rf $DTGROOT/tmp/root/etc/runit/runsvdir/default/agetty-tty1
+rm -rf $DTGROOT/tmp/root/etc/runit/runsvdir/default/agetty-tty1
 [ -e $DTGROOT/tmp/root/etc/runit/runsvdir/default/agetty-autologin-tty1 ] && rm -rf $DTGROOT/tmp/root/etc/runit/runsvdir/default/agetty-autologin-tty1
 # symlinks have to be made inside chrot
 chroot $DTGROOT/tmp/root ln -s /etc/sv/agetty-autologin-tty1 /etc/runit/runsvdir/default/
@@ -59,6 +59,7 @@ cp -r $DTGROOT/programs/* $DTGROOT/tmp/root/dtg-ng/programs/
 
 chmod a+x $DTGROOT/tmp/root/dtg-ng/programs/dtg-launcher/install
 chmod a+x $DTGROOT/tmp/root/dtg-ng/programs/dtg-stats/install
+chmod a+x $DTGROOT/tmp/root/dtg-ng/programs/usb_mass_helper
 chroot $DTGROOT/tmp/root/ /dtg-ng/programs/dtg-launcher/install
 chroot $DTGROOT/tmp/root/ /dtg-ng/programs/dtg-stats/install
 
