@@ -12,7 +12,7 @@ set $mod Mod4
 bindsym --release XF86AudioPreset exec amixer -c 0 set 'Playback Mux' HP
 bindsym XF86AudioPreset exec amixer -c 0 set 'Playback Mux' SPK
 
-amixer -c 0 set 'Playback Mux' SPK
+exec amixer -c 0 set 'Playback Mux' SPK
 
 for_window [app_id="supertuxkart"] fullscreen enable
 bindsym $mod+XF86AudioRaiseVolume exec brightnessctl s 5%+
