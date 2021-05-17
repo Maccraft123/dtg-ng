@@ -1,0 +1,23 @@
+#!/bin/bash
+set -e
+
+case $1 in
+	"start")
+		# ensure we have the gadget dwc2
+		modprobe -r dwc2
+		insmod /dtg-ng/dwc2-gadget.ko
+
+		# /dev/mmcblk0p2 can't change
+		umount /data
+
+		# do the thing
+		modprobe g_mass_storage file=/dev/mmcblk0p2
+		;;
+	"stop")
+		# undo start
+		modprobe -r g_mass_storage
+		mount /data
+		modprobe -r dwc2 # remove gadget dwc2
+		modprobe dwc2 # insert regular dwc2
+		;;
+esac
