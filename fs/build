@@ -14,7 +14,7 @@ cd $DTGROOT/tmp
 #chroot $DTGROOT/tmp/root /bin/apt install -y libretro-nestopia libretro-mupen64plus libretro-mgba libretro-gambatte libretro-desmume libretro-beetle-psx libretro-bsnes-mercury-performance
 
 
-ROOTFS_TAR="$(curl -s -L https://voidlinux.org/download/ | grep aarch64 | tr '"' ' ' | awk '{print $3}' | grep musl)"
+ROOTFS_TAR="$(curl -s -L https://voidlinux.org/download/ | grep aarch64 | tr '"' ' ' | awk '{print $3}' | grep -v musl)"
 
 wget $ROOTFS_TAR -O void.tar.xz
 tar xfp void.tar.xz -C $DTGROOT/tmp/root
@@ -33,8 +33,8 @@ echo 'GETTY_ARGS="--autologin user --noclear"
 BAUD_RATE=38400
 TERM_NAME=linux' > $DTGROOT/tmp/root/etc/sv/agetty-autologin-tty1/conf
 
-[ -e $DTGROOT/tmp/root/etc/runit/runsvdir/default/agetty-tty1 ] && rm $DTGROOT/tmp/root/etc/runit/runsvdir/default/agetty-tty1
-[ -e $DTGROOT/tmp/root/etc/runit/runsvdir/default/agetty-autologin-tty1 ] && rm $DTGROOT/tmp/root/etc/runit/runsvdir/default/agetty-autologin-tty1
+[ -e $DTGROOT/tmp/root/etc/runit/runsvdir/default/agetty-tty1 ] && rm -rf $DTGROOT/tmp/root/etc/runit/runsvdir/default/agetty-tty1
+[ -e $DTGROOT/tmp/root/etc/runit/runsvdir/default/agetty-autologin-tty1 ] && rm -rf $DTGROOT/tmp/root/etc/runit/runsvdir/default/agetty-autologin-tty1
 # symlinks have to be made inside chrot
 chroot $DTGROOT/tmp/root ln -s /etc/sv/agetty-autologin-tty1 /etc/runit/runsvdir/default/
 
@@ -58,7 +58,9 @@ mkdir -p $DTGROOT/tmp/root/dtg-ng/programs
 cp -r $DTGROOT/programs/* $DTGROOT/tmp/root/dtg-ng/programs/
 
 chmod a+x $DTGROOT/tmp/root/dtg-ng/programs/dtg-launcher/install
+chmod a+x $DTGROOT/tmp/root/dtg-ng/programs/dtg-stats/install
 chroot $DTGROOT/tmp/root/ /dtg-ng/programs/dtg-launcher/install
+chroot $DTGROOT/tmp/root/ /dtg-ng/programs/dtg-stats/install
 
 chmod a+w $DTGROOT/tmp/root/etc/sudoers
 echo 'user ALL=(ALL:ALL) NOPASSWD: ALL' >> $DTGROOT/tmp/root/etc/sudoers
@@ -66,3 +68,4 @@ chmod a-w $DTGROOT/tmp/root/etc/sudoers
 
 mkdir $DTGROOT/tmp/root/data
 echo '/dev/mmcblk0p2 /data vfat rw,umask=0000 0 0' > $DTGROOT/tmp/root/etc/fstab
+echo 'tmpfs /tmp tmpfs defaults,nosuid,nodev 0 0' >> $DTGROOT/tmp/root/etc/fstab
