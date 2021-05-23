@@ -8,23 +8,49 @@ export SD=$3
 mkdir -p $DTGROOT/tmp
 cd $DTGROOT/tmp
 
-debootstrap --arch=arm64 sid $DTGROOT/tmp/root https://deb.debian.org/debian || true
 
+#chroot $DTGROOT/tmp/root /bin/passwd -d root
+#chroot $DTGROOT/tmp/root /bin/apt install -y sway xfce4-terminal xwayland i3status build-essential git libncurses-dev supertuxkart retroarch kodi kodi-peripheral-joystick brightnessctl sudo alsa-utils
+#chroot $DTGROOT/tmp/root /bin/apt install -y libretro-nestopia libretro-mupen64plus libretro-mgba libretro-gambatte libretro-desmume libretro-beetle-psx libretro-bsnes-mercury-performance
+
+
+ROOTFS_TAR="$(curl -s -L https://voidlinux.org/download/ | grep aarch64 | tr '"' ' ' | awk '{print $3}' | grep -v musl)"
+
+wget $ROOTFS_TAR -O void.tar.xz
+tar xfp void.tar.xz -C $DTGROOT/tmp/root
+cp /etc/resolv.conf $DTGROOT/tmp/root/etc/resolv.conf
+
+chroot $DTGROOT/tmp/root/ /bin/xbps-install -Syu xbps
+chroot $DTGROOT/tmp/root/ /bin/xbps-install -yu
+chroot $DTGROOT/tmp/root/ /bin/xbps-install -y base-system
+chroot $DTGROOT/tmp/root/ /bin/xbps-remove -y base-voidstrap
+chroot $DTGROOT/tmp/root/ /bin/xbps-install -y vim NetworkManager mesa mesa-panfrost-dri base-devel sway xfce4-terminal xorg-server-xwayland i3status git ncurses supertuxkart retroarch kodi kodi-addon-peripheral-joystick brightnessctl sudo alsa-utils ppsspp ncurses-devel dejavu-fonts-ttf
+
+chroot $DTGROOT/tmp/root /usr/sbin/useradd -c "DTG User" -m user -G video,audio,input -s /bin/bash
+
+cp -R $DTGROOT/tmp/root/etc/sv/agetty-tty1 $DTGROOT/tmp/root/etc/sv/agetty-autologin-tty1
+echo 'GETTY_ARGS="--autologin user --noclear"
+BAUD_RATE=38400
+TERM_NAME=linux' > $DTGROOT/tmp/root/etc/sv/agetty-autologin-tty1/conf
+
+rm -rf $DTGROOT/tmp/root/etc/runit/runsvdir/default/agetty-tty1
+[ -e $DTGROOT/tmp/root/etc/runit/runsvdir/default/agetty-autologin-tty1 ] && rm -rf $DTGROOT/tmp/root/etc/runit/runsvdir/default/agetty-autologin-tty1
+# symlinks have to be made inside chrot
+chroot $DTGROOT/tmp/root ln -s /etc/sv/agetty-autologin-tty1 /etc/runit/runsvdir/default/
+
+# the uart thing shell
+cp -R $DTGROOT/tmp/root/etc/sv/agetty-ttyS0 $DTGROOT/tmp/root/etc/sv/agetty-ttyS2
+chroot $DTGROOT/tmp/root ln -s /etc/sv/agetty-ttyS2 /etc/runit/runsvdir/default/
 
 chroot $DTGROOT/tmp/root /bin/passwd -d root
-chroot $DTGROOT/tmp/root /bin/apt update
-chroot $DTGROOT/tmp/root /bin/apt install -y sway xfce4-terminal xwayland i3status build-essential git libncurses-dev supertuxkart retroarch kodi kodi-peripheral-joystick brightnessctl sudo alsa-utils
-chroot $DTGROOT/tmp/root /usr/sbin/useradd -c "DTG User" -m user -G video,audio,render,input -s /bin/bash
-
-mkdir -p $DTGROOT/tmp/root/etc/systemd/system/getty@tty1.service.d/
-printf '[Service]
-ExecStart=
-ExecStart=-/usr/sbin/agetty --autologin user --noclear %%I $TERM
-' > $DTGROOT/tmp/root/etc/systemd/system/getty@tty1.service.d/override.conf
 
 echo 'export WLR_LIBINPUT_NO_DEVICES=1' >> $DTGROOT/tmp/root/home/user/.bashrc
 echo 'tty | grep tty1 && exec sway' >> $DTGROOT/tmp/root/home/user/.bashrc
-echo '[ -n "$DISPLAY" ] && ( while true; do dtg-launcher; done )' >> $DTGROOT/tmp/root/home/user/.bashrc
+echo 'export XDG_RUNTIME_DIR=/run/user/$(id -u)' >> $DTGROOT/tmp/root/home/user/.bashrc
+echo 'sudo mkdir $XDG_RUNTIME_DIR 2>/dev/null' >> $DTGROOT/tmp/root/home/user/.bashrc
+echo 'sudo chown user:user $XDG_RUNTIME_DIR' >> $DTGROOT/tmp/root/home/user/.bashrc
+echo 'chmod 700 $XDG_RUNTIME_DIR' >> $DTGROOT/tmp/root/home/user/.bashrc
+echo '[ -n "$WAYLAND_DISPLAY" ] && ( while true; do dtg-launcher; done )' >> $DTGROOT/tmp/root/home/user/.bashrc
 
 cp $DTGROOT/device/$DEVICE/sway-config $DTGROOT/tmp/root/etc/sway/config
 cp $DTGROOT/device/$DEVICE/i3status.conf $DTGROOT/tmp/root/etc/i3status.conf
@@ -36,7 +62,19 @@ mkdir -p $DTGROOT/tmp/root/dtg-ng/programs
 cp -r $DTGROOT/programs/* $DTGROOT/tmp/root/dtg-ng/programs/
 
 chmod a+x $DTGROOT/tmp/root/dtg-ng/programs/dtg-launcher/install
+chmod a+x $DTGROOT/tmp/root/dtg-ng/programs/dtg-stats/install
+chmod a+x $DTGROOT/tmp/root/dtg-ng/programs/usb_mass_helper
 chroot $DTGROOT/tmp/root/ /dtg-ng/programs/dtg-launcher/install
 
 # make power key suspend
 sed -i'' 's/#HandlePowerKey=poweroff/HandlePowerKey=suspend/' $DTGROOT/tmp/root/etc/systemd/logind.conf
+
+chroot $DTGROOT/tmp/root/ /dtg-ng/programs/dtg-stats/install
+
+chmod a+w $DTGROOT/tmp/root/etc/sudoers
+echo 'user ALL=(ALL:ALL) NOPASSWD: ALL' >> $DTGROOT/tmp/root/etc/sudoers
+chmod a-w $DTGROOT/tmp/root/etc/sudoers
+
+mkdir $DTGROOT/tmp/root/data
+echo '/dev/mmcblk0p2 /data vfat rw,umask=0000 0 0' > $DTGROOT/tmp/root/etc/fstab
+echo 'tmpfs /tmp tmpfs defaults,nosuid,nodev 0 0' >> $DTGROOT/tmp/root/etc/fstab

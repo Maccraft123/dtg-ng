@@ -1,0 +1,25 @@
+#!/bin/bash
+set -e
+
+export DTGROOT=$1
+export DEVICE=$2
+export SD=$3
+
+# we assume data part is mounted at tmp/data
+export DAT_DIR=$DTGROOT/tmp/data/
+
+# retroarch & emulation
+mkdir -p $DAT_DIR/cores
+mkdir -p $DAT_DIR/roms
+mkdir -p $DAT_DIR/cheats
+mkdir -p $DAT_DIR/thumbnails
+mkdir -p $DAT_DIR/playlists
+
+# too old in debian
+cd $DTGROOT/tmp
+mkdir -p $DAT_DIR/assets
+[ -f $DTGROOT/tmp/assets.zip ] && rm -f $DTGROOT/tmp/assets.zip
+wget https://github.com/libretro/retroarch-assets/archive/refs/heads/master.zip -O assets.zip
+bsdtar xf $DTGROOT/tmp/assets.zip --strip-components=1 -C $DAT_DIR/assets
+
+mkdir -p $DAT_DIR/media

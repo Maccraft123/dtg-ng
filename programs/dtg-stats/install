@@ -6,12 +6,12 @@
 mkdir -p /dtg-ng/src
 cd /dtg-ng/src
 
-if [ -d dtg-launcher ]; then
-	cd dtg-launcher
+if [ -d dtg-stats ]; then
+	cd dtg-stats
 	git pull
 else
-	git clone https://github.com/Maccraft123/dtg-launcher.git
-	cd dtg-launcher
+	git clone https://github.com/Maccraft123/dtg-stats.git
+	cd dtg-stats
 fi
 
 make
