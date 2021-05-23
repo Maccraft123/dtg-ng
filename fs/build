@@ -37,3 +37,6 @@ cp -r $DTGROOT/programs/* $DTGROOT/tmp/root/dtg-ng/programs/
 
 chmod a+x $DTGROOT/tmp/root/dtg-ng/programs/dtg-launcher/install
 chroot $DTGROOT/tmp/root/ /dtg-ng/programs/dtg-launcher/install
+
+# make power key suspend
+sed -i'' 's/#HandlePowerKey=poweroff/HandlePowerKey=suspend/' $DTGROOT/tmp/root/etc/systemd/logind.conf
