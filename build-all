@@ -24,7 +24,7 @@ p
 
 
 w
-' | fdisk $SD
+' | fdisk $SD || true
 partx $SD
 # system partition
 mkfs.ext4 ${SD}1
