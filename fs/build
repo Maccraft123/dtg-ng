@@ -65,10 +65,6 @@ chmod a+x $DTGROOT/tmp/root/dtg-ng/programs/dtg-launcher/install
 chmod a+x $DTGROOT/tmp/root/dtg-ng/programs/dtg-stats/install
 chmod a+x $DTGROOT/tmp/root/dtg-ng/programs/usb_mass_helper
 chroot $DTGROOT/tmp/root/ /dtg-ng/programs/dtg-launcher/install
-
-# make power key suspend
-sed -i'' 's/#HandlePowerKey=poweroff/HandlePowerKey=suspend/' $DTGROOT/tmp/root/etc/systemd/logind.conf
-
 chroot $DTGROOT/tmp/root/ /dtg-ng/programs/dtg-stats/install
 
 chmod a+w $DTGROOT/tmp/root/etc/sudoers
