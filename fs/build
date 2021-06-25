@@ -45,11 +45,11 @@ chroot $DTGROOT/tmp/root ln -s /etc/sv/agetty-ttyS2 /etc/runit/runsvdir/default/
 chroot $DTGROOT/tmp/root /bin/passwd -d root
 
 echo 'export WLR_LIBINPUT_NO_DEVICES=1' >> $DTGROOT/tmp/root/home/user/.bashrc
-echo 'tty | grep tty1 && exec sway' >> $DTGROOT/tmp/root/home/user/.bashrc
 echo 'export XDG_RUNTIME_DIR=/run/user/$(id -u)' >> $DTGROOT/tmp/root/home/user/.bashrc
 echo 'sudo mkdir $XDG_RUNTIME_DIR 2>/dev/null' >> $DTGROOT/tmp/root/home/user/.bashrc
 echo 'sudo chown user:user $XDG_RUNTIME_DIR' >> $DTGROOT/tmp/root/home/user/.bashrc
 echo 'chmod 700 $XDG_RUNTIME_DIR' >> $DTGROOT/tmp/root/home/user/.bashrc
+echo 'tty | grep tty1 && exec sway' >> $DTGROOT/tmp/root/home/user/.bashrc
 echo '[ -n "$WAYLAND_DISPLAY" ] && ( while true; do dtg-launcher; done )' >> $DTGROOT/tmp/root/home/user/.bashrc
 
 cp $DTGROOT/device/$DEVICE/sway-config $DTGROOT/tmp/root/etc/sway/config
