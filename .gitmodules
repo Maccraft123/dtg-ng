@@ -1,0 +1,3 @@
+[submodule "alpine-chroot-install"]
+	path = alpine-chroot-install
+	url = https://github.com/alpinelinux/alpine-chroot-install.git

@@ -8,49 +8,40 @@ export SD=$3
 mkdir -p $DTGROOT/tmp
 cd $DTGROOT/tmp
 
+# missing: networkmanager 
 
-#chroot $DTGROOT/tmp/root /bin/passwd -d root
-#chroot $DTGROOT/tmp/root /bin/apt install -y sway xfce4-terminal xwayland i3status build-essential git libncurses-dev supertuxkart retroarch kodi kodi-peripheral-joystick brightnessctl sudo alsa-utils
-#chroot $DTGROOT/tmp/root /bin/apt install -y libretro-nestopia libretro-mupen64plus libretro-mgba libretro-gambatte libretro-desmume libretro-beetle-psx libretro-bsnes-mercury-performance
+$DTGROOT/alpine-chroot-install/alpine-chroot-install -a aarch64 -d $DTGROOT/tmp/root
 
+echo 'http://dl-cdn.alpinelinux.org/alpine/latest-stable/testing' >> $DTGROOT/tmp/root/etc/apk/repositories
+sed -i'' 's/latest-stable/edge/g' $DTGROOT/tmp/root/etc/apk/repositories
 
-ROOTFS_TAR="$(curl -s -L https://voidlinux.org/download/ | grep aarch64 | tr '"' ' ' | awk '{print $3}' | grep -v musl)"
+chroot $DTGROOT/tmp/root apk update
+chroot $DTGROOT/tmp/root apk upgrade
 
-wget $ROOTFS_TAR -O void.tar.xz
-tar xfp void.tar.xz -C $DTGROOT/tmp/root
-cp /etc/resolv.conf $DTGROOT/tmp/root/etc/resolv.conf
+chroot $DTGROOT/tmp/root apk add eudev
+chroot $DTGROOT/tmp/root setup-udev || true
+chroot $DTGROOT/tmp/root apk add mesa-dri-gallium mesa git ncurses supertuxkart retroarch kodi kodi-peripheral-joystick brightnessctl sudo alsa-utils libretro-ppsspp ncurses-dev ttf-dejavu linux-headers
+chroot $DTGROOT/tmp/root apk add sway xfce4-terminal xwayland
 
-chroot $DTGROOT/tmp/root/ /bin/xbps-install -Syu xbps
-chroot $DTGROOT/tmp/root/ /bin/xbps-install -yu
-chroot $DTGROOT/tmp/root/ /bin/xbps-install -y base-system
-chroot $DTGROOT/tmp/root/ /bin/xbps-remove -y base-voidstrap
-chroot $DTGROOT/tmp/root/ /bin/xbps-install -y vim NetworkManager mesa mesa-panfrost-dri base-devel sway xfce4-terminal xorg-server-xwayland i3status git ncurses supertuxkart retroarch kodi kodi-addon-peripheral-joystick brightnessctl sudo alsa-utils ppsspp ncurses-devel dejavu-fonts-ttf
+chroot $DTGROOT/tmp/root adduser -g "DTG User" -s /bin/ash -D user
 
-chroot $DTGROOT/tmp/root /usr/sbin/useradd -c "DTG User" -m user -G video,audio,input -s /bin/bash
+chroot $DTGROOT/tmp/root adduser user video
+chroot $DTGROOT/tmp/root adduser user audio
+chroot $DTGROOT/tmp/root adduser user input
 
-cp -R $DTGROOT/tmp/root/etc/sv/agetty-tty1 $DTGROOT/tmp/root/etc/sv/agetty-autologin-tty1
-echo 'GETTY_ARGS="--autologin user --noclear"
-BAUD_RATE=38400
-TERM_NAME=linux' > $DTGROOT/tmp/root/etc/sv/agetty-autologin-tty1/conf
+sed -i'' 's/tty1::/#tty1::/g' $DTGROOT/tmp/root/etc/inittab
+echo 'tty1::respawn:/bin/login -f user' >> $DTGROOT/tmp/root/etc/inittab
+echo 'ttyS0::respawn:/sbin/getty 115200 vt100 ' >> $DTGROOT/tmp/root/etc/inittab
 
-rm -rf $DTGROOT/tmp/root/etc/runit/runsvdir/default/agetty-tty1
-[ -e $DTGROOT/tmp/root/etc/runit/runsvdir/default/agetty-autologin-tty1 ] && rm -rf $DTGROOT/tmp/root/etc/runit/runsvdir/default/agetty-autologin-tty1
-# symlinks have to be made inside chrot
-chroot $DTGROOT/tmp/root ln -s /etc/sv/agetty-autologin-tty1 /etc/runit/runsvdir/default/
+chroot $DTGROOT/tmp/root passwd -d root
 
-# the uart thing shell
-cp -R $DTGROOT/tmp/root/etc/sv/agetty-ttyS0 $DTGROOT/tmp/root/etc/sv/agetty-ttyS2
-chroot $DTGROOT/tmp/root ln -s /etc/sv/agetty-ttyS2 /etc/runit/runsvdir/default/
-
-chroot $DTGROOT/tmp/root /bin/passwd -d root
-
-echo 'export WLR_LIBINPUT_NO_DEVICES=1' >> $DTGROOT/tmp/root/home/user/.bashrc
-echo 'export XDG_RUNTIME_DIR=/run/user/$(id -u)' >> $DTGROOT/tmp/root/home/user/.bashrc
-echo 'sudo mkdir $XDG_RUNTIME_DIR 2>/dev/null' >> $DTGROOT/tmp/root/home/user/.bashrc
-echo 'sudo chown user:user $XDG_RUNTIME_DIR' >> $DTGROOT/tmp/root/home/user/.bashrc
-echo 'chmod 700 $XDG_RUNTIME_DIR' >> $DTGROOT/tmp/root/home/user/.bashrc
-echo 'tty | grep tty1 && exec sway' >> $DTGROOT/tmp/root/home/user/.bashrc
-echo '[ -n "$WAYLAND_DISPLAY" ] && ( while true; do dtg-launcher; done )' >> $DTGROOT/tmp/root/home/user/.bashrc
+echo 'export WLR_LIBINPUT_NO_DEVICES=1' >> $DTGROOT/tmp/root/home/user/.profile
+echo 'export XDG_RUNTIME_DIR=/xdg/$(id -u)' >> $DTGROOT/tmp/root/home/user/.profile
+echo 'sudo mkdir -p $XDG_RUNTIME_DIR 2>/dev/null' >> $DTGROOT/tmp/root/home/user/.profile
+echo 'sudo chown user:user $XDG_RUNTIME_DIR' >> $DTGROOT/tmp/root/home/user/.profile
+echo 'chmod 700 $XDG_RUNTIME_DIR' >> $DTGROOT/tmp/root/home/user/.profile
+echo 'tty | grep tty1 && exec sway' >> $DTGROOT/tmp/root/home/user/.profile
+echo '[ -n "$WAYLAND_DISPLAY" ] && ( while true; do dtg-launcher; done )' >> $DTGROOT/tmp/root/home/user/.profile
 
 cp $DTGROOT/device/$DEVICE/sway-config $DTGROOT/tmp/root/etc/sway/config
 cp $DTGROOT/device/$DEVICE/i3status.conf $DTGROOT/tmp/root/etc/i3status.conf

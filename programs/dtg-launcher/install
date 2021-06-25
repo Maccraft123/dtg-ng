@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # this runs on device or in chroot
 # updates too

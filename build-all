@@ -44,7 +44,14 @@ mount ${SD}2 $DTGROOT/tmp/data
 ./kernel/install $DTGROOT $DEVICE $SD
 ./uboot/install $DTGROOT $DEVICE $SD
 
+
+umount --lazy $DTGROOT/tmp/root/sys/
+umount --lazy $DTGROOT/tmp/root/proc/
+umount --lazy $DTGROOT/tmp/root/dev
+
 umount $DTGROOT/tmp/root
 umount $DTGROOT/tmp/data
+
+sync
 
 echo 'Done!'
