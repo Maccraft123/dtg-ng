@@ -31,9 +31,13 @@ chroot $DTGROOT/tmp/root adduser user input
 
 sed -i'' 's/tty1::/#tty1::/g' $DTGROOT/tmp/root/etc/inittab
 echo 'tty1::respawn:/bin/login -f user' >> $DTGROOT/tmp/root/etc/inittab
-echo 'ttyS0::respawn:/sbin/getty 115200 vt100 ' >> $DTGROOT/tmp/root/etc/inittab
+echo 'ttyS0::respawn:/sbin/getty -L ttyS0 115200 vt100 ' >> $DTGROOT/tmp/root/etc/inittab
+echo 'ttyS2::respawn:/sbin/getty -L ttyS2 115200 vt100 ' >> $DTGROOT/tmp/root/etc/inittab
 
 chroot $DTGROOT/tmp/root passwd -d root
+chroot $DTGROOT/tmp/root passwd -d user
+
+echo ttyS2 >> $DTGROOT/tmp/root/etc/securetty
 
 echo 'export WLR_LIBINPUT_NO_DEVICES=1' >> $DTGROOT/tmp/root/home/user/.profile
 echo 'export XDG_RUNTIME_DIR=/xdg/$(id -u)' >> $DTGROOT/tmp/root/home/user/.profile
