@@ -19,7 +19,7 @@ chroot $DTGROOT/tmp/root apk update
 chroot $DTGROOT/tmp/root apk upgrade
 
 chroot $DTGROOT/tmp/root apk add eudev
-chroot $DTGROOT/tmp/root setup-udev || true
+#chroot $DTGROOT/tmp/root setup-udev || true
 chroot $DTGROOT/tmp/root apk add mesa-dri-gallium mesa git ncurses supertuxkart retroarch kodi kodi-peripheral-joystick brightnessctl sudo alsa-utils libretro-ppsspp ncurses-dev ttf-dejavu linux-headers
 chroot $DTGROOT/tmp/root apk add sway xfce4-terminal xwayland
 

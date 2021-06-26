@@ -47,7 +47,8 @@ mount ${SD}2 $DTGROOT/tmp/data
 
 umount $DTGROOT/tmp/data
 
-$DTGROOT/tmp/root/destroy -r
+$DTGROOT/tmp/root/destroy -r 2>/dev/null || true
+umount $DTGROOT/tmp/root
 
 sync
 
