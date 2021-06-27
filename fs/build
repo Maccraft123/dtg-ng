@@ -19,7 +19,16 @@ chroot $DTGROOT/tmp/root apk update
 chroot $DTGROOT/tmp/root apk upgrade
 
 chroot $DTGROOT/tmp/root apk add eudev
-#chroot $DTGROOT/tmp/root setup-udev || true
+
+# setup udev, shamelessly stolen from setup-udev
+rm -f $DTGROOT/tmp/root/etc/runlevels/sysinit/hwdrivers /etc/runlevels/sysinit/mdev
+
+for i in sysinit/udev-trigger sysinit/udev default/udev-postmount; do
+	if ! [ -e $DTGROOT/tmp/root/etc/runlevels/$i ]; then
+		ln -s $DTGROOT/tmp/root/etc/init.d/${i#*/} $DTGROOT/tmp/root/etc/runlevels/$i
+	fi
+done
+
 chroot $DTGROOT/tmp/root apk add mesa-dri-gallium mesa git ncurses supertuxkart retroarch kodi kodi-peripheral-joystick brightnessctl sudo alsa-utils libretro-ppsspp ncurses-dev ttf-dejavu linux-headers
 chroot $DTGROOT/tmp/root apk add sway xfce4-terminal xwayland
 
