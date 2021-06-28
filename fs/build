@@ -8,53 +8,32 @@ export SD=$3
 mkdir -p $DTGROOT/tmp
 cd $DTGROOT/tmp
 
-# missing: networkmanager 
 
-$DTGROOT/alpine-chroot-install/alpine-chroot-install -a aarch64 -d $DTGROOT/tmp/root
+#chroot $DTGROOT/tmp/root apk add mesa-dri-gallium mesa git ncurses supertuxkart retroarch kodi kodi-peripheral-joystick brightnessctl sudo alsa-utils libretro-ppsspp ncurses-dev ttf-dejavu linux-headers
+#chroot $DTGROOT/tmp/root apk add sway xfce4-terminal xwayland
 
-echo 'http://dl-cdn.alpinelinux.org/alpine/latest-stable/testing' >> $DTGROOT/tmp/root/etc/apk/repositories
-sed -i'' 's/latest-stable/edge/g' $DTGROOT/tmp/root/etc/apk/repositories
+debootstrap --arch=arm64 focal $DTGROOT/tmp/root http://ports.ubuntu.com/
 
-chroot $DTGROOT/tmp/root apk update
-chroot $DTGROOT/tmp/root apk upgrade
+chroot $DTGROOT/tmp/root /usr/sbin/useradd -c "DTG User" -m user -G video,audio,render,input -s /bin/bash
 
-chroot $DTGROOT/tmp/root apk add eudev
+echo 'deb http://ports.ubuntu.com/ focal main universe restricted' > $DTGROOT/tmp/root/etc/apt/sources.list
 
-# setup udev, shamelessly stolen from setup-udev
-rm -f $DTGROOT/tmp/root/etc/runlevels/sysinit/hwdrivers /etc/runlevels/sysinit/mdev
-
-for i in sysinit/udev-trigger sysinit/udev default/udev-postmount; do
-	if ! [ -e $DTGROOT/tmp/root/etc/runlevels/$i ]; then
-		ln -s $DTGROOT/tmp/root/etc/init.d/${i#*/} $DTGROOT/tmp/root/etc/runlevels/$i
-	fi
-done
-
-chroot $DTGROOT/tmp/root apk add mesa-dri-gallium mesa git ncurses supertuxkart retroarch kodi kodi-peripheral-joystick brightnessctl sudo alsa-utils libretro-ppsspp ncurses-dev ttf-dejavu linux-headers
-chroot $DTGROOT/tmp/root apk add sway xfce4-terminal xwayland
-
-chroot $DTGROOT/tmp/root adduser -g "DTG User" -s /bin/ash -D user
-
-chroot $DTGROOT/tmp/root adduser user video
-chroot $DTGROOT/tmp/root adduser user audio
-chroot $DTGROOT/tmp/root adduser user input
-
-sed -i'' 's/tty1::/#tty1::/g' $DTGROOT/tmp/root/etc/inittab
-echo 'tty1::respawn:/bin/login -f user' >> $DTGROOT/tmp/root/etc/inittab
-echo 'ttyS0::respawn:/sbin/getty -L ttyS0 115200 vt100 ' >> $DTGROOT/tmp/root/etc/inittab
-echo 'ttyS2::respawn:/sbin/getty -L ttyS2 115200 vt100 ' >> $DTGROOT/tmp/root/etc/inittab
+chroot $DTGROOT/tmp/root apt update
+chroot $DTGROOT/tmp/root apt install sway xfce4-terminal xwayland i3status build-essential git libncurses-dev supertuxkart brightnessctl sudo alsa-utils
 
 chroot $DTGROOT/tmp/root passwd -d root
 chroot $DTGROOT/tmp/root passwd -d user
 
-echo ttyS2 >> $DTGROOT/tmp/root/etc/securetty
+mkdir -p $DTGROOT/tmp/root/etc/systemd/system/getty@tty1.service.d/
+printf '[Service]
+ExecStart=
+ExecStart=-/usr/sbin/agetty --autologin user --noclear %%I $TERM
+' > $DTGROOT/tmp/root/etc/systemd/system/getty@tty1.service.d/override.conf
 
-echo 'export WLR_LIBINPUT_NO_DEVICES=1' >> $DTGROOT/tmp/root/home/user/.profile
-echo 'export XDG_RUNTIME_DIR=/xdg/$(id -u)' >> $DTGROOT/tmp/root/home/user/.profile
-echo 'sudo mkdir -p $XDG_RUNTIME_DIR 2>/dev/null' >> $DTGROOT/tmp/root/home/user/.profile
-echo 'sudo chown user:user $XDG_RUNTIME_DIR' >> $DTGROOT/tmp/root/home/user/.profile
-echo 'chmod 700 $XDG_RUNTIME_DIR' >> $DTGROOT/tmp/root/home/user/.profile
-echo 'tty | grep tty1 && exec sway' >> $DTGROOT/tmp/root/home/user/.profile
-echo '[ -n "$WAYLAND_DISPLAY" ] && ( while true; do dtg-launcher; done )' >> $DTGROOT/tmp/root/home/user/.profile
+
+echo 'export WLR_LIBINPUT_NO_DEVICES=1' >> $DTGROOT/tmp/root/home/user/.bashrc
+echo 'tty | grep tty1 && exec sway' >> $DTGROOT/tmp/root/home/user/.bashrc
+echo '[ -n "$WAYLAND_DISPLAY" ] && ( while true; do dtg-launcher; done )' >> $DTGROOT/tmp/root/home/user/.bashrc
 
 cp $DTGROOT/device/$DEVICE/sway-config $DTGROOT/tmp/root/etc/sway/config
 cp $DTGROOT/device/$DEVICE/i3status.conf $DTGROOT/tmp/root/etc/i3status.conf
