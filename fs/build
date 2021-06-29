@@ -19,7 +19,9 @@ chroot $DTGROOT/tmp/root /usr/sbin/useradd -c "DTG User" -m user -G video,audio,
 echo 'deb http://ports.ubuntu.com/ focal main universe restricted' > $DTGROOT/tmp/root/etc/apt/sources.list
 
 chroot $DTGROOT/tmp/root apt update
-chroot $DTGROOT/tmp/root apt install sway xfce4-terminal xwayland i3status build-essential git libncurses-dev supertuxkart brightnessctl sudo alsa-utils
+chroot $DTGROOT/tmp/root apt install -y sway xfce4-terminal xwayland i3status build-essential git libncurses-dev supertuxkart brightnessctl sudo alsa-utils software-properties-common
+
+chroot $DTGROOT/tmp/root setcap cap_sys_admin+ep /usr/bin/sway
 
 chroot $DTGROOT/tmp/root passwd -d root
 chroot $DTGROOT/tmp/root passwd -d user
