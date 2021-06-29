@@ -17,12 +17,12 @@ debootstrap --arch=arm64 focal $DTGROOT/tmp/root http://ports.ubuntu.com/
 chroot $DTGROOT/tmp/root /usr/sbin/useradd -c "DTG User" -m user -G video,audio,render,input -s /bin/bash
 
 echo 'deb http://ports.ubuntu.com/ focal main universe restricted' > $DTGROOT/tmp/root/etc/apt/sources.list
-echo 'deb http://ppa.launchpad.net/libretro/stable/ubuntu focal main' >> $DTGROOT/tmp/root/etc/apt/sources.list
-
-chroot $DTGROOT/tmp/root apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B2BA0B6750986899B189AFF18DAAE7FECA3745F # libretro stable ppa
 
 chroot $DTGROOT/tmp/root apt update
-chroot $DTGROOT/tmp/root apt install -y sway xfce4-terminal xwayland i3status build-essential git libncurses-dev supertuxkart brightnessctl sudo alsa-utils retroarch
+chroot $DTGROOT/tmp/root apt install -y sway xfce4-terminal xwayland i3status build-essential git libncurses-dev supertuxkart brightnessctl sudo alsa-utils retroarch gnupg
+
+echo 'deb http://ppa.launchpad.net/libretro/stable/ubuntu focal main' >> $DTGROOT/tmp/root/etc/apt/sources.list
+chroot $DTGROOT/tmp/root apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B2BA0B6750986899B189AFF18DAAE7FECA3745F # libretro stable ppa
 
 chroot $DTGROOT/tmp/root setcap cap_sys_admin+ep /usr/bin/sway
 
