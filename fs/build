@@ -16,7 +16,8 @@ echo 'deb http://ports.ubuntu.com/ focal main universe restricted' > $DTGROOT/tm
 echo 'deb http://ports.ubuntu.com/ focal-updates main universe restricted' >> $DTGROOT/tmp/root/etc/apt/sources.list
 
 chroot $DTGROOT/tmp/root apt update
-chroot $DTGROOT/tmp/root apt install -y sway xfce4-terminal xwayland build-essential git libncurses-dev supertuxkart brightnessctl sudo alsa-utils gnupg
+chroot $DTGROOT/tmp/root apt install -y sway xfce4-terminal xwayland build-essential git libncurses-dev supertuxkart brightnessctl sudo alsa-utils gnupg clang
+chroot $DTGROOT/tmp/root apt install -y libopenal-dev libglew-dev libglfw3-dev libsndfile1-dev libmpg123-dev
 
 echo 'deb http://ppa.launchpad.net/libretro/stable/ubuntu focal main' >> $DTGROOT/tmp/root/etc/apt/sources.list
 chroot $DTGROOT/tmp/root apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B2BA0B6750986899B189AFF18DAAE7FECA3745F # libretro stable ppa
