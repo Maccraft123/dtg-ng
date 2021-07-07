@@ -14,5 +14,5 @@ else
 	cd dtg-stats
 fi
 
-make
-make install
+CC=clang make
+CC=clang make install
