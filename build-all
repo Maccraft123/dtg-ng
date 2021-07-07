@@ -41,6 +41,12 @@ mount ${SD}2 $DTGROOT/tmp/data
 ./fs/build $DTGROOT $DEVICE $SD
 ./fs/mk_data $DTGROOT $DEVICE $SD
 
+./programs_cross/re3/build $DTGROOT $DEVICE $SD
+./programs_cross/re3/install $DTGROOT $DEVICE $SD
+
+./programs_cross/mesa/build $DTGROOT $DEVICE $SD
+./programs_cross/mesa/install $DTGROOT $DEVICE $SD
+
 ./kernel/install $DTGROOT $DEVICE $SD
 ./uboot/install $DTGROOT $DEVICE $SD
 

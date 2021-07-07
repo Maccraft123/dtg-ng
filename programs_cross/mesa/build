@@ -1,0 +1,25 @@
+#!/bin/bash
+set -e
+set -v
+
+DTGROOT=$1
+
+cd $DTGROOT/tmp
+
+if [ -d $DTGROOT/tmp/mesa ]; then
+	cd $DTGROOT/tmp/mesa
+	git pull
+else
+	git clone https://gitlab.freedesktop.org/mesa/mesa.git
+fi
+
+cd $DTGROOT/tmp/mesa
+
+export QEMU_LD_PREFIX=/usr/$TRIPLET
+
+meson dtg-build --prefix=/opt --buildtype=release \
+-Dplatforms=wayland,x11 -Ddri-drivers= \
+-Dvulkan-drivers=panfrost -Dgallium-drivers=panfrost,kmsro \
+-Dlibunwind=false -Dllvm=false --cross-file $DTGROOT/programs_cross/mesa/aarch64-linux-gnu.cross --libdir=lib/aarch64-linux-gnu
+
+ninja -C dtg-build

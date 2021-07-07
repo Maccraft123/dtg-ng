@@ -1,0 +1,17 @@
+#!/bin/bash
+set -e
+set -v
+
+DTGROOT=$1
+
+mkdir -p $DTGROOT/tmp/b_re3
+cd $DTGROOT/tmp/b_re3
+
+[ -d 're3' ] && rm -rf re3
+git clone --recursive https://github.com/GTAmodding/re3.git
+cd re3
+
+./premake5Linux --with-librw gmake2 --no-git-hash
+cd build
+
+CC=aarch64-linux-gnu-gcc-10 CXX=aarch64-linux-gnu-g++-10 make config=release_linux-arm64-librw_gl3_glfw-oal -j$(nproc)
