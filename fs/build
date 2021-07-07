@@ -8,21 +8,21 @@ export SD=$3
 mkdir -p $DTGROOT/tmp
 cd $DTGROOT/tmp
 
-
-#chroot $DTGROOT/tmp/root apk add mesa-dri-gallium mesa git ncurses supertuxkart retroarch kodi kodi-peripheral-joystick brightnessctl sudo alsa-utils libretro-ppsspp ncurses-dev ttf-dejavu linux-headers
-#chroot $DTGROOT/tmp/root apk add sway xfce4-terminal xwayland
-
 debootstrap --arch=arm64 focal $DTGROOT/tmp/root http://ports.ubuntu.com/
 
 chroot $DTGROOT/tmp/root /usr/sbin/useradd -c "DTG User" -m user -G video,audio,render,input -s /bin/bash
 
 echo 'deb http://ports.ubuntu.com/ focal main universe restricted' > $DTGROOT/tmp/root/etc/apt/sources.list
+echo 'deb http://ports.ubuntu.com/ focal-updates main universe restricted' >> $DTGROOT/tmp/root/etc/apt/sources.list
 
 chroot $DTGROOT/tmp/root apt update
-chroot $DTGROOT/tmp/root apt install -y sway xfce4-terminal xwayland i3status build-essential git libncurses-dev supertuxkart brightnessctl sudo alsa-utils retroarch gnupg
+chroot $DTGROOT/tmp/root apt install -y sway xfce4-terminal xwayland build-essential git libncurses-dev supertuxkart brightnessctl sudo alsa-utils gnupg
 
 echo 'deb http://ppa.launchpad.net/libretro/stable/ubuntu focal main' >> $DTGROOT/tmp/root/etc/apt/sources.list
 chroot $DTGROOT/tmp/root apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B2BA0B6750986899B189AFF18DAAE7FECA3745F # libretro stable ppa
+
+chroot $DTGROOT/tmp/root apt update
+chroot $DTGROOT/tmp/root apt install retroarch
 
 chroot $DTGROOT/tmp/root setcap cap_sys_admin+ep /usr/bin/sway
 
@@ -34,7 +34,6 @@ printf '[Service]
 ExecStart=
 ExecStart=-/usr/sbin/agetty --autologin user --noclear %%I $TERM
 ' > $DTGROOT/tmp/root/etc/systemd/system/getty@tty1.service.d/override.conf
-
 
 echo 'export WLR_LIBINPUT_NO_DEVICES=1' >> $DTGROOT/tmp/root/home/user/.bashrc
 echo 'tty | grep tty1 && exec sway' >> $DTGROOT/tmp/root/home/user/.bashrc
