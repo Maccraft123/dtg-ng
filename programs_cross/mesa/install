@@ -11,5 +11,6 @@ touch $DTGROOT/tmp/root/etc/ld.so.conf.d/0-mesa.conf
 echo "/opt/lib/aarch64-linux-gnu" > $DTGROOT/tmp/root/etc/ld.so.conf.d/0-mesa.conf
 
 DESTDIR=$DTGROOT/tmp/root/ ninja -C dtg-build install
+chroot $DTGROOT/tmp/root/ ldconfig
 
 ldconfig
