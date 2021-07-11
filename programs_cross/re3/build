@@ -11,6 +11,8 @@ cd $DTGROOT/tmp/b_re3
 git clone --recursive https://github.com/GTAmodding/re3.git
 cd re3
 
+patch -p1 < $DTGROOT/programs_cross/re3/01-hack.patch
+
 ./premake5Linux --with-librw gmake2 --no-git-hash
 cd build
 

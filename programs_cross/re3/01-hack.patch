@@ -1,0 +1,25 @@
+From 8466dfb0bef0936f5b2bedc4759c93a15fb31a5b Mon Sep 17 00:00:00 2001
+From: Maccraft123 <maccraft123mc@gmail.com>
+Date: Sat, 10 Jul 2021 22:22:16 +0200
+Subject: [PATCH] hack-for-fat32
+
+---
+ src/core/CdStreamPosix.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/core/CdStreamPosix.cpp b/src/core/CdStreamPosix.cpp
+index bc9129eb..df2d11cb 100644
+--- a/src/core/CdStreamPosix.cpp
++++ b/src/core/CdStreamPosix.cpp
+@@ -207,7 +207,7 @@ CdStreamInit(int32 numChannels)
+ 		return;
+ 	}
+ #ifdef __linux__
+-	_gdwCdStreamFlags = O_RDONLY | O_NOATIME;
++	_gdwCdStreamFlags = O_RDONLY;
+ #else
+ 	_gdwCdStreamFlags = O_RDONLY;
+ #endif
+-- 
+2.32.0
+
