@@ -10,16 +10,17 @@ if [ -d $DTGROOT/tmp/mesa ]; then
 	cd $DTGROOT/tmp/mesa
 	git pull
 else
-	git clone https://gitlab.freedesktop.org/mesa/mesa.git
+	git clone https://gitlab.freedesktop.org/mesa/mesa.git -b main
 fi
 
 cd $DTGROOT/tmp/mesa
 
-export QEMU_LD_PREFIX=/usr/$TRIPLET
+export QEMU_LD_PREFIX=/usr/aarch64-linux-gnu
 
 meson dtg-build --prefix=/opt --buildtype=release \
 -Dplatforms=wayland,x11 -Ddri-drivers= \
--Dvulkan-drivers=panfrost -Dgallium-drivers=panfrost,kmsro \
--Dlibunwind=false -Dllvm=false --cross-file $DTGROOT/programs_cross/mesa/aarch64-linux-gnu.cross --libdir=lib/aarch64-linux-gnu
+-Dvulkan-drivers= -Dgallium-drivers=panfrost,kmsro \
+-Dlibunwind=false -Dllvm=false \
+--cross-file $DTGROOT/programs_cross/mesa/aarch64-linux-gnu.cross --libdir=lib/aarch64-linux-gnu
 
 ninja -C dtg-build

@@ -4,8 +4,12 @@ DTGROOT=$1
 
 cd $DTGROOT/tmp/mesa
 
-echo "export LIBGL_DRIVERS_PATH='/opt/lib/aarch64-linux-gnu/dri/:/usr/lib/aarch64-linux-gnu/dri:\$LIBGL_DRIVERS_PATH'" >> $DTGROOT/tmp/root/etc/profile
-echo "export LD_LIBRARY_PATH=/opt/lib/aarch64-linux-gnu/:\$LD_LIBRARY_PATH" >> $DTGROOT/tmp/root/etc/profile
+if grep -s LIBGL_DRIVERS_PATH $DTGROOT/tmp/root/etc/profile; then
+	echo "export LIBGL_DRIVERS_PATH=/opt/lib/aarch64-linux-gnu/dri/" >> $DTGROOT/tmp/root/etc/profile
+	echo "export LD_LIBRARY_PATH=/opt/lib/aarch64-linux-gnu/" >> $DTGROOT/tmp/root/etc/profile
+else
+	echo AAAAAAA
+fi
 
 touch $DTGROOT/tmp/root/etc/ld.so.conf.d/0-mesa.conf
 echo "/opt/lib/aarch64-linux-gnu" > $DTGROOT/tmp/root/etc/ld.so.conf.d/0-mesa.conf
