@@ -14,5 +14,5 @@ else
 	cd dtg-launcher
 fi
 
-CC=clang make
+CC=clang make || CC=clang make || CC=clang make || CC=clang make || CC=clang make
 CC=clang make install
