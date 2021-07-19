@@ -1,0 +1,26 @@
+#!/bin/bash
+set -e
+set -v
+
+DTGROOT=$1
+
+cd $DTGROOT/tmp
+
+if [ -d $DTGROOT/tmp/xserver ]; then
+	cd $DTGROOT/tmp/xserver
+	git pull
+else
+	git clone https://gitlab.freedesktop.org/xorg/xserver.git -b xwayland-21.1
+fi
+
+cd $DTGROOT/tmp/xserver
+
+export QEMU_LD_PREFIX=/usr/aarch64-linux-gnu
+
+meson dtg-build -Dipv6=false -Dxvfb=false -Dxnest=false -Dxcsecurity=true -Dxorg=false \
+-Dxephyr=false -Dxwayland=true -Dxwayland_eglstream=false -Dxwin=false -Dxquartz=false \
+-Dglamor=true -Dudev=true -Dsystemd_logind=true -Dsuid_wrapper=true -Dprefix=/opt \
+-Dbuildtype=release -Dxkb_dir=/usr/share/X11/xkb  -Dxkb_output_dir=/var/lib/xkb \
+--cross-file $DTGROOT/programs_cross/mesa/aarch64-linux-gnu.cross --libdir=lib/aarch64-linux-gnu
+
+ninja -C dtg-build

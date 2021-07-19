@@ -4,7 +4,7 @@ DTGROOT=$1
 
 cd $DTGROOT/tmp/mesa
 
-if grep -s LIBGL_DRIVERS_PATH $DTGROOT/tmp/root/etc/profile; then
+if grep -v -s LIBGL_DRIVERS_PATH $DTGROOT/tmp/root/etc/profile; then
 	echo "export LIBGL_DRIVERS_PATH=/opt/lib/aarch64-linux-gnu/dri/" >> $DTGROOT/tmp/root/etc/profile
 	echo "export LD_LIBRARY_PATH=/opt/lib/aarch64-linux-gnu/" >> $DTGROOT/tmp/root/etc/profile
 else

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+DTGROOT=$1
+
+cd $DTGROOT/tmp/xserver
+
+if grep -v -s /opt/bin $DTGROOT/tmp/root/etc/profile; then
+	echo 'export PATH=/opt/bin:$PATH' >> $DTGROOT/tmp/root/etc/profile
+else
+	echo AAAAAAA
+fi
+
+DESTDIR=$DTGROOT/tmp/root/ ninja -C dtg-build install
+chroot $DTGROOT/tmp/root/ ldconfig
