@@ -30,7 +30,7 @@ font pango:Monospace 9
 bar 0 {
 	mode hide
 	position bottom
-	status_command i3status
+	status_command while echo "$(dtg-stats)" \ \ $(date +'%d-%m-%Y  %k:%M:%S'); do sleep 1; done
 	colors {
 		statusline #ffffff
 		background #000000
