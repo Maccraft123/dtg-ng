@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+set -v
 
 export DTGROOT=$1
 export DEVICE=$2
@@ -8,26 +9,23 @@ export SD=$3
 mkdir -p $DTGROOT/tmp
 cd $DTGROOT/tmp
 
-debootstrap --arch=arm64 impish $DTGROOT/tmp/root http://ports.ubuntu.com/
+debootstrap --arch=arm64 focal $DTGROOT/tmp/root http://ports.ubuntu.com/ || true
 
 chroot $DTGROOT/tmp/root /usr/sbin/useradd -c "DTG User" -m user -G video,audio,render,input -s /bin/bash
 
-echo 'deb http://ports.ubuntu.com/ impish main universe restricted' > $DTGROOT/tmp/root/etc/apt/sources.list
-echo 'deb http://ports.ubuntu.com/ impish-updates main universe restricted' >> $DTGROOT/tmp/root/etc/apt/sources.list
-
-echo 'deb http://ppa.launchpad.net/oibaf/graphics-drivers/ubuntu impish main'
-chroot $DTGROOT/tmp/root apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 5ABCE68FF4633EA42E219156957D2708A03A4626 # oibaf graphics drivers ppa
+echo 'deb http://ports.ubuntu.com/ focal main universe restricted' > $DTGROOT/tmp/root/etc/apt/sources.list
+echo 'deb http://ports.ubuntu.com/ focal-updates main universe restricted' >> $DTGROOT/tmp/root/etc/apt/sources.list
 
 chroot $DTGROOT/tmp/root apt update
-chroot $DTGROOT/tmp/root apt install -y sway xfce4-terminal xwayland build-essential git libncurses-dev supertuxkart brightnessctl sudo alsa-utils gnupg 
-chroot $DTGROOT/tmp/root apt install -y libopenal-dev libglew-dev libglfw3-dev libsndfile1-dev libmpg123-dev clang kmscube mesa-utils
-chroot $DTGROOT/tmp/root apt install -y kodi-wayland kodi-bin kodi
+chroot $DTGROOT/tmp/root apt install -y sway xfce4-terminal xwayland build-essential git libncurses-dev supertuxkart brightnessctl sudo alsa-utils gnupg || true
+chroot $DTGROOT/tmp/root apt install -y libopenal-dev libglew-dev libglfw3-dev libsndfile1-dev libmpg123-dev clang kmscube mesa-utils libmd0 libtirpc3 || true 
+chroot $DTGROOT/tmp/root apt install -y kodi-wayland kodi-bin kodi || true
 
-echo 'deb http://ppa.launchpad.net/libretro/stable/ubuntu impish main' >> $DTGROOT/tmp/root/etc/apt/sources.list
+echo 'deb http://ppa.launchpad.net/libretro/stable/ubuntu focal main' >> $DTGROOT/tmp/root/etc/apt/sources.list
 chroot $DTGROOT/tmp/root apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B2BA0B6750986899B189AFF18DAAE7FECA3745F # libretro stable ppa
 
 chroot $DTGROOT/tmp/root apt update
-chroot $DTGROOT/tmp/root apt install retroarch
+chroot $DTGROOT/tmp/root apt install -y retroarch || true
 
 chroot $DTGROOT/tmp/root setcap cap_sys_admin+ep /usr/bin/sway
 
