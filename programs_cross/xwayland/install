@@ -11,4 +11,3 @@ else
 fi
 
 DESTDIR=$DTGROOT/tmp/root/ ninja -C dtg-build install
-chroot $DTGROOT/tmp/root/ ldconfig
