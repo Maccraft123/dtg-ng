@@ -62,5 +62,5 @@ echo 'user ALL=(ALL:ALL) NOPASSWD: ALL' >> $DTGROOT/tmp/root/etc/sudoers
 chmod a-w $DTGROOT/tmp/root/etc/sudoers
 
 mkdir $DTGROOT/tmp/root/data
-echo '/dev/mmcblk0p2 /data vfat rw,umask=0000 0 0' > $DTGROOT/tmp/root/etc/fstab
+echo '/dev/mmcblk0p2 /data vfat rw,umask=0000,uid=1000 0 0' > $DTGROOT/tmp/root/etc/fstab
 echo 'tmpfs /tmp tmpfs defaults,nosuid,nodev 0 0' >> $DTGROOT/tmp/root/etc/fstab
