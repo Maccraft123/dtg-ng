@@ -21,11 +21,12 @@ chroot $DTGROOT/tmp/root apt install -y sway xfce4-terminal xwayland build-essen
 chroot $DTGROOT/tmp/root apt install -y libopenal-dev libglew-dev libglfw3-dev libsndfile1-dev libmpg123-dev clang kmscube mesa-utils libmd0 libtirpc3 || true 
 chroot $DTGROOT/tmp/root apt install -y kodi-wayland kodi-bin kodi || true
 
-echo 'deb http://ppa.launchpad.net/libretro/stable/ubuntu focal main' >> $DTGROOT/tmp/root/etc/apt/sources.list
+echo 'deb http://ppa.launchpad.net/libretro/testing/ubuntu focal main' >> $DTGROOT/tmp/root/etc/apt/sources.list
 chroot $DTGROOT/tmp/root apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B2BA0B6750986899B189AFF18DAAE7FECA3745F # libretro stable ppa
 
 chroot $DTGROOT/tmp/root apt update
 chroot $DTGROOT/tmp/root apt install -y retroarch || true
+chroot $DTGROOT/tmp/root apt install -y libretro-snes9x libretro-gpsp libretro-quicknes libretro-gambatte || true
 
 chroot $DTGROOT/tmp/root setcap cap_sys_admin+ep /usr/bin/sway
 
@@ -45,8 +46,9 @@ echo '[ -n "$WAYLAND_DISPLAY" ] && ( while true; do dtg-launcher; done )' >> $DT
 cp $DTGROOT/device/$DEVICE/sway-config $DTGROOT/tmp/root/etc/sway/config
 cp $DTGROOT/device/$DEVICE/i3status.conf $DTGROOT/tmp/root/etc/i3status.conf
 
-# todo: odroid go advance
-cp $DTGROOT/device/$DEVICE/retroarch.cfg $DTGROOT/tmp/root/etc/retroarch.cfg
+
+mkdir -p $DTGROOT/tmp/root/overlay/
+cp $DTGROOT/device/$DEVICE/overlay/* $DTGROOT/tmp/root/overlay/
 
 mkdir -p $DTGROOT/tmp/root/dtg-ng/programs
 cp -r $DTGROOT/programs/* $DTGROOT/tmp/root/dtg-ng/programs/

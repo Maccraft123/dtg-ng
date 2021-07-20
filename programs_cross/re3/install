@@ -9,4 +9,4 @@ mkdir -p $DTGROOT/tmp/data/gta3
 cp -r $DTGROOT/tmp/b_re3/re3/gamefiles/* $DTGROOT/tmp/data/re3_in/
 cp -r $DTGROOT/tmp/b_re3/re3/bin/linux-arm64-librw_gl3_glfw-oal/Release/re3 $DTGROOT/tmp/data/re3_in/
 
-cp -r $DTGROOT/device/$DEVICE/re3.ini $DTGROOT/tmp/data/re3_in/
+cp -r $DTGROOT/device/$DEVICE/overlay/re3.ini $DTGROOT/tmp/data/re3_in/
