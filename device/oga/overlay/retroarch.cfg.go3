@@ -1,5 +1,5 @@
 cache_directory = "/tmp"
-libretro_directory = "/data/cores/"
+libretro_directory = "/usr/lib/libretro/"
 libretro_info_path = "/usr/share/libretro/info/"
 rgui_browser_directory = "/data/roms/"
 assets_directory = "/data/assets/"
